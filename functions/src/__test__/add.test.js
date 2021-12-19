@@ -56,4 +56,58 @@ describe('문서 업데이트', () => {
       timestamp: firebase.firestore.FieldValue.serverTimestamp(),
     });
   });
+
+  it('중첩된 객체의 필드 업데이트', async () => {
+    const initialData = {
+      name: 'Frank',
+      age: 12,
+      favorites: {
+        food: 'Pizza',
+        color: 'Blue',
+        subject: 'recess',
+      },
+    };
+    const re = await db.collection('users').doc('Frank').set(initialData);
+    const res = await db.collection('users').doc('Frank').update({
+      age: 13,
+      'favorites.color': 'Red',
+      timestamp: firebase.firestore.FieldValue.serverTimestamp(),
+    });
+  });
+
+  it('배열 요소 업데이트', async () => {
+    const data = {
+      name: 'washington',
+    };
+    const res = await db.collection('cities').doc('DC').set(data);
+    const washingtonRef = db.collection('cities').doc('DC');
+
+    const unionRes = await washingtonRef.update({
+      regions: firebase.firestore.FieldValue.arrayUnion('greater_virginia'),
+    });
+
+    const removeRes = await washingtonRef.update({
+      regions: firebase.firestore.FieldValue.arrayRemove('greater_virginia'),
+    });
+    const multipleUnionRes = await washingtonRef.update({
+      regions: firebase.firestore.FieldValue.arrayUnion(
+        'south_carolina',
+        'texas',
+      ),
+    });
+
+    // using spread operator in ES6 syntax
+    const newRegions = ['south_carolina', 'texas', 'la', 'newyork'];
+    const multipleUnionRes2 = await washingtonRef.update({
+      regions: firebase.firestore.FieldValue.arrayUnion(...newRegions),
+    });
+  });
+
+  it('숫자 값 늘리기', async () => {
+    const washingtonRef = db.collection('cities').doc('DC');
+
+    const res = await washingtonRef.update({
+      population: firebase.firestore.FieldValue.increment(50),
+    });
+  });
 });
