@@ -5,6 +5,7 @@
 
 # 환경변수 설정
 process.env
+firebase.config.js
 
 # google service account 
 firebase-adminsdk.json
