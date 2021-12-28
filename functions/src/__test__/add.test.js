@@ -1,19 +1,23 @@
-import firebase from '../util/admin';
+'use strict';
 
+beforeEach(() => {
+  jest.setTimeout();
+});
+
+const FIREBASE = require('../util/firebase');
 describe('컬렉션 만들고 데이터 저장하기', () => {
-  const db = firebase.firestore();
-  it('데이터 추가', async () => {
+  it.only('데이터 추가', async () => {
     const data = {
-      id: '1',
+      id: '33333',
       name: 'hongjinhyeok',
       state: 'pangyo',
       country: 'republic of korea',
     };
-    const res = await db.collection('users').doc(data.id).set(data);
+    const res = await FIREBASE.db.collection('users').doc(data.id).set(data);
   });
 
   it('데이터 덮어쓰기', async () => {
-    const usersRef = db.collection('users').doc('1');
+    const usersRef = FIREBASE.db.collection('users').doc('1');
     const res = await usersRef.set(
       {
         cool: true,
@@ -23,7 +27,7 @@ describe('컬렉션 만들고 데이터 저장하기', () => {
   });
 
   it('ID 자동 추가', async () => {
-    const res = await db.collection('users').add({
+    const res = await FIREBASE.db.collection('users').add({
       name: 'kate',
       country: 'USA',
     });
@@ -31,7 +35,7 @@ describe('컬렉션 만들고 데이터 저장하기', () => {
   });
 
   it('문서를 참조하여 ID 자동 추가', async () => {
-    const newUserRef = db.collection('users').doc();
+    const newUserRef = FIREBASE.db.collection('users').doc();
 
     const res = await newUserRef.set({
       name: 'kakao',
@@ -41,16 +45,14 @@ describe('컬렉션 만들고 데이터 저장하기', () => {
 });
 
 describe('문서 업데이트', () => {
-  const db = firebase.firestore();
-
   it('일부 필드 업데이트', async () => {
-    const newUserRef = db.collection('users').doc('1');
+    const newUserRef = FIREBASE.db.collection('users').doc('1');
 
     const res = await newUserRef.update({ cool: false });
   });
 
   it('서버 타임스탬프', async () => {
-    const newUserRef = db.collection('users').doc('1');
+    const newUserRef = FIREBASE.db.collection('users').doc('1');
 
     const res = await newUserRef.update({
       timestamp: firebase.firestore.FieldValue.serverTimestamp(),
@@ -67,8 +69,11 @@ describe('문서 업데이트', () => {
         subject: 'recess',
       },
     };
-    const re = await db.collection('users').doc('Frank').set(initialData);
-    const res = await db.collection('users').doc('Frank').update({
+    const re = await FIREBASE.db
+      .collection('users')
+      .doc('Frank')
+      .set(initialData);
+    const res = await FIREBASE.db.collection('users').doc('Frank').update({
       age: 13,
       'favorites.color': 'Red',
       timestamp: firebase.firestore.FieldValue.serverTimestamp(),
@@ -79,8 +84,8 @@ describe('문서 업데이트', () => {
     const data = {
       name: 'washington',
     };
-    const res = await db.collection('cities').doc('DC').set(data);
-    const washingtonRef = db.collection('cities').doc('DC');
+    const res = await FIREBASE.db.collection('cities').doc('DC').set(data);
+    const washingtonRef = FIREBASE.db.collection('cities').doc('DC');
 
     const unionRes = await washingtonRef.update({
       regions: firebase.firestore.FieldValue.arrayUnion('greater_virginia'),
@@ -104,7 +109,7 @@ describe('문서 업데이트', () => {
   });
 
   it('숫자 값 늘리기', async () => {
-    const washingtonRef = db.collection('cities').doc('DC');
+    const washingtonRef = FIREBASE.db.collection('cities').doc('DC');
 
     const res = await washingtonRef.update({
       population: firebase.firestore.FieldValue.increment(50),
