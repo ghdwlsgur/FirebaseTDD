@@ -1,20 +1,21 @@
 module.exports = {
   env: {
     browser: true,
-    es2021: true,
-    node: true,
+    commonjs: true,
     es6: true,
+    node: true,
   },
   plugins: ['prettier'],
   extends: ['prettier', 'plugin:prettier/recommended'],
-  parserOptions: {
-    ecmaVersion: 8,
-    sourceType: 'module',
-    ecmaFeatures: {
-      jsx: false,
-    },
+  globals: {
+    Atomics: 'readonly',
+    SharedArrayBuffer: 'readonly',
   },
-  ignorePatterns: ['node_modules/'],
+  parserOptions: {
+    ecmaVersion: 2018,
+    sourceType: 'module',
+    allowImportExportEverywhere: true,
+  },
   rules: {
     'prettier/prettier': 'error',
   },

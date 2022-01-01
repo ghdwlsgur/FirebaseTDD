@@ -1,15 +1,3 @@
-# dependencies
-functions/node_modules
-/.pnp
-.pnp.js
-
-# 환경변수 설정
-process.env
-firebase.config.js
-
-# google service account 
-firebase-adminsdk.json
-
 #firebase
 firebase.json
 .firebaserc
@@ -23,25 +11,9 @@ firestore.indexes.json
 firestore.rules
 database.rules.json
 
-# testing
-/coverage
-
-# production
-/build
-
 # misc
 .DS_Store
 .env.local
 .env.development.local
 .env.test.local
 .env.production.local
-
-functions/database-debug.log
-functions/firebase-debug.log
-functions/firestore-debug.log
-functions/ui-debug.log
-npm-debug.log*
-yarn-debug.log*
-yarn-error.log*
-yarn.lock
-functions/src/config
