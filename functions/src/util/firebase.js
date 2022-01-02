@@ -15,9 +15,15 @@ if (!isInitializeApp) {
   isInitializeApp = true;
 }
 
+//===========================
+//          Auth
+//===========================
 const auth = firebase.auth();
 exports.auth = auth;
 
+//===========================
+//           DB
+//===========================
 const db = firebase.firestore();
 exports.db = db;
 
