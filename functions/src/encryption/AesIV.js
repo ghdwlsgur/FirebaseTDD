@@ -8,8 +8,12 @@ const crypto = require('crypto');
  * @returns {string} AesIV
  */
 function createAesIV(userPassword) {
-  const subIv = Buffer.from(userPassword, 'base64');
+  const subIv = userPassword.toString('base64');
   const AesIV = [crypto.randomBytes(16)].concat(subIv);
+
+  for (const test of AesIV) {
+    console.log(`test: ${test}`);
+  }
 
   return AesIV;
 }

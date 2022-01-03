@@ -1,9 +1,10 @@
 'use strict';
 Object.defineProperty(exports, '__esModule', { value: true });
 
-exports.firebase = exports.db = exports.auth = void 0;
+exports.db = exports.auth = void 0;
 
 const firebase = require('firebase-admin');
+exports.firebase = firebase;
 const serviceAccount = require('../config/adminsdk.json');
 
 let isInitializeApp = false;

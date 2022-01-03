@@ -5,6 +5,7 @@ const crypto = require('crypto');
 const createAesKey = require('./AesKey');
 const createAesIV = require('./AesIV');
 const FIREBASE = require('../util/firebase');
+
 /**=================================================
  * 암호화
  * @param {string} plainString 암호화 대상
@@ -12,25 +13,24 @@ const FIREBASE = require('../util/firebase');
  * @param {string} userPassword 유저가 생성한 비밀번호
  * @returns {string}
  */
-async function encrypt(plainString, userToken, userPassword, uid) {
+function encrypt(plainString, userToken, userPassword) {
   const AesKey = createAesKey.createAesKey(userToken, userPassword);
   const AesIV = createAesIV.createAesIV(userPassword);
 
-  const now = getTimestampNow;
+  const res = FIREBASE.db.collection('userKey').add({
+    AesKey: AesKey.toString('base64'),
+    AesIV: AesIV[0].toString('base64'),
+    password: AesIV[1],
+    cdt: getTimestampNow(),
+  });
 
-  const data = {
-    id: '4444',
-    AesKey,
-    AesIV,
-  };
-  const res = await FIREBASE.db.collection('userKey').doc(data.id).set(data);
   const cipher = crypto.createCipheriv('aes-256-cbc', AesKey, AesIV[0]);
   let encrypted = Buffer.concat([
     cipher.update(Buffer.from(plainString, 'utf8')),
     cipher.final(),
   ]);
-  const encryptedString = encrypted.toString('base64');
-  return encryptedString;
+
+  return encrypted.toString('base64');
 }
 exports.encrypt = encrypt;
 
@@ -39,6 +39,6 @@ exports.encrypt = encrypt;
  * @returns {timestamp}
  */
 function getTimestampNow() {
-  return FIREBASE.admin.firestore.Timestamp.now();
+  return FIREBASE.firebase.firestore.Timestamp.now();
 }
 exports.getTimestampNow = getTimestampNow;

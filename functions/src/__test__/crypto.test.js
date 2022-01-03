@@ -1,5 +1,4 @@
 'use strict';
-Object.defineProperty(exports, '__esModule', { value: true });
 
 beforeEach(() => {
   jest.setTimeout();
@@ -7,11 +6,16 @@ beforeEach(() => {
 
 const encryption = require('../encryption/encrypt');
 const decryption = require('../encryption/decrypt');
+const FIREBASE = require('../util/firebase');
+const AesKey = require('../encryption/AesKey');
+const AesIV = require('../encryption/AesIV');
 
-describe('crypto code test', () => {
+describe.only('crypto code test', () => {
   it('양방향 암호화', async () => {
     // 사용자 토큰 + 사용자가 설정한 secret key를 이용하여 암복호화하기
     const crypto = require('crypto');
+    const AesKey = 'UIpGMnSZi+...';
+    const AesIV = 'aqAAm6mT99...';
 
     // plainString 사용자가 지정한 암호화
     function encrypt(plainString, AesKey, AesIV) {
@@ -41,32 +45,61 @@ describe('crypto code test', () => {
     //============================================================
     // AesKey (사용자토큰, 사용자가 설정한 비밀번호)
     //============================================================
-    const key = crypto.scryptSync('123123', '@#dsaf', 32);
+    // const key = crypto.scryptSync('123123', '@#dsaf', 32);
 
-    //============================================================
-    // AesIv (사용자가 설정한 비밀번호)
-    //============================================================
-    const subIv = Buffer.from('1234', 'base64');
-    const iv = [crypto.randomBytes(16)].concat(subIv);
+    // //============================================================
+    // // AesIv (사용자가 설정한 비밀번호)
+    // //============================================================
+    // const subIv = Buffer.from('1234', 'base64');
+    // const iv = [crypto.randomBytes(16)].concat(subIv);
 
-    let encryptedData = encrypt('1234', key, iv[0]);
-    console.log(`encryptedData: ${encryptedData}`);
+    // let encryptedData = encrypt('1234', key, iv[0]);
+    // console.log(`encryptedData: ${encryptedData}`);
 
-    let decryptedData = decrypt(encryptedData, key, iv[0]);
+    // let decryptedData = decrypt(encryptedData, key, iv[0]);
+    // console.log(decryptedData);
+    let decryptedData = decrypt('cT7RLCgwFGVh3nQjp7IWBA==', AesKey, AesIV);
     console.log(decryptedData);
   });
 
   it.only('test', async () => {
     const security = '1234';
     const userToken = '123123';
-    const userPassword = '@#dsaf';
-    let en = await encryption.encrypt(security, userToken, userPassword);
+    const userPassword = 'dasdasd@@11';
+    // let en = encryption.encrypt(security, userToken, userPassword);
 
     // console.log(`en: ${en}`);
-    // console.log(typeof en);
-    // const de = decryption.decrypt(en, userToken, userPassword);
-    // console.log(`de: ${de}`);
+    const res = decryption.decrypt('a+hT6ST0f5+9069szkDj/g==');
+    console.log(res);
+  });
+
+  it('test2', async () => {
+    const doc = await FIREBASE.db
+      .collection('userKey')
+      .doc('aKDC5B160SyBVuXLRGiC')
+      .get();
+
+    const docref = doc.data();
+
+    let test1 = docref.AesIV[0].toString('base64');
+    let test2 = docref.AesKey.toString('base64');
+    console.log(Buffer.from(test1, 'base64'));
+
+    console.log(docref);
+  });
+
+  it('test3', async () => {
+    const doc = await FIREBASE.db
+      .collection('userKey')
+      .doc('IMaLooxuD1uHxlviroeO')
+      .get();
+
+    const docref = await doc.data();
+    const AesKey = docref.AesKey;
+    const AesIV = docref.AesIV;
+
+    console.log(`AesKey: ${Buffer.from(AesKey, 'base64')}`);
+    console.log(`AesIV: ${Buffer.from(AesIV, 'base64')}`);
   });
 });
-// FyQx/F0HHZNyCRDAv39jPw==
-// wnLYswkdFcse4bY1iVFKsw==
+// IMaLooxuD1uHxlviroeO
