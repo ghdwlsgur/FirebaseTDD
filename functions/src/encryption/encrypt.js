@@ -15,16 +15,17 @@ const FIREBASE = require('../util/firebase');
  */
 function encrypt(plainString, userToken, userPassword) {
   const AesKey = createAesKey.createAesKey(userToken, userPassword);
-  const AesIV = createAesIV.createAesIV(userPassword);
+  const AesIV = createAesIV.createAesIV();
+  const stringKey = AesKey.toString('base64');
+  const stringIV = AesIV.toString('base64');
 
   const res = FIREBASE.db.collection('userKey').add({
-    AesKey: AesKey.toString('base64'),
-    AesIV: AesIV[0].toString('base64'),
-    password: AesIV[1],
+    AesKey: stringKey,
+    AesIV: stringIV,
     cdt: getTimestampNow(),
   });
 
-  const cipher = crypto.createCipheriv('aes-256-cbc', AesKey, AesIV[0]);
+  const cipher = crypto.createCipheriv('aes-256-cbc', AesKey, AesIV);
   let encrypted = Buffer.concat([
     cipher.update(Buffer.from(plainString, 'utf8')),
     cipher.final(),

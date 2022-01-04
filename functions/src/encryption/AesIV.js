@@ -7,14 +7,10 @@ const crypto = require('crypto');
  * @param {string} userPassword 유저가 설정한 비밀번호
  * @returns {string} AesIV
  */
-function createAesIV(userPassword) {
-  const subIv = userPassword.toString('base64');
-  const AesIV = [crypto.randomBytes(16)].concat(subIv);
-
-  for (const test of AesIV) {
-    console.log(`test: ${test}`);
-  }
-
+function createAesIV() {
+  // const subIv = userPassword.toString('base64');
+  // const AesIV = [crypto.randomBytes(16)].concat(subIv);
+  const AesIV = crypto.randomBytes(16);
   return AesIV;
 }
 exports.createAesIV = createAesIV;

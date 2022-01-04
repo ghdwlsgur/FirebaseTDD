@@ -1,7 +1,8 @@
 'use strict';
+Object.defineProperty(exports, '__esModule', { value: true });
 
 beforeEach(() => {
-  jest.setTimeout();
+  jest.useFakeTimers();
 });
 
 const encryption = require('../encryption/encrypt');
@@ -66,10 +67,9 @@ describe.only('crypto code test', () => {
     const security = '1234';
     const userToken = '123123';
     const userPassword = 'dasdasd@@11';
-    // let en = encryption.encrypt(security, userToken, userPassword);
-
-    // console.log(`en: ${en}`);
-    const res = decryption.decrypt('a+hT6ST0f5+9069szkDj/g==');
+    let en = encryption.encrypt(security, userToken, userPassword);
+    console.log(`en: ${en}`);
+    const res = decryption.decrypt('o8xin8LWzdtWwmrEkM1NaA==');
     console.log(res);
   });
 
@@ -100,6 +100,25 @@ describe.only('crypto code test', () => {
 
     console.log(`AesKey: ${Buffer.from(AesKey, 'base64')}`);
     console.log(`AesIV: ${Buffer.from(AesIV, 'base64')}`);
+  });
+
+  it('', async () => {
+    const doc = await FIREBASE.db
+      .collection('userKey')
+      .doc('gCs63ZTKfxaUuCnN7F73')
+      .get();
+
+    const docref = await doc.data();
+    const AesKey = Buffer.from(docref.AesKey, 'base64');
+    const AesIV = Buffer.from(docref.AesIV[0], 'base64');
+
+    const decipher = crypto.createDecipheriv('aes-256-cbc', AesKey, AesIV);
+    const deciphered = Buffer.concat([
+      decipher.update(Buffer.from(base64String, 'base64')),
+      decipher.final(),
+    ]);
+
+    return deciphered.toString('utf8');
   });
 });
 // IMaLooxuD1uHxlviroeO
