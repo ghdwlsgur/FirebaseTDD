@@ -13,15 +13,10 @@ const FIREBASE = require('../util/firebase');
  * @param {string} userPassword 유저가 생성한 비밀번호
  * @returns {string}
  */
-function encrypt(plainString, userToken, userPassword) {
-  const AesKey = createAesKey.createAesKey(userToken, userPassword);
-  const AesIV = createAesIV.createAesIV();
-  const stringKey = AesKey.toString('base64');
-  const stringIV = AesIV.toString('base64');
-
+function encrypt(plainString, AesKey, AesIV) {
   const res = FIREBASE.db.collection('userKey').add({
-    AesKey: stringKey,
-    AesIV: stringIV,
+    AesKey,
+    AesIV,
     cdt: getTimestampNow(),
   });
 
