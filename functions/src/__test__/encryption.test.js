@@ -8,6 +8,7 @@ beforeEach(() => {
 const AESIV = require('../encryption/AesIV');
 const AESKEY = require('../encryption/AesKey');
 const ENCRYPT = require('../encryption/encrypt');
+const DECRYPT = require('../encryption/decrypt');
 
 describe('AesIV.js code test', () => {
   it('createAesIV() code test', async () => {
@@ -24,10 +25,15 @@ describe('AesIV.js code test', () => {
   });
 
   it.only('encrypt() code test', async () => {
-    const AesKey = '֋�S%��든�s����Γ1���9Q�';
-    const AesIV = 'X9JDBafY3wpJMAqaqX5KFQ==1111';
+    const userToken = '111';
+    const userPassword = '1234';
     const plainString = 'hihello';
-    const res = ENCRYPT.encrypt(plainString, AesKey, AESIV);
-    console.log(`res: ${res}`);
+    const result = await ENCRYPT.encrypt(
+      plainString,
+      userToken,
+      userPassword,
+    ).then();
+    const result2 = await DECRYPT.decrypt(result).then();
+    console.log(result2);
   });
 });

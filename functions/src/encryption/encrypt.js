@@ -2,9 +2,11 @@
 Object.defineProperty(exports, '__esModule', { value: true });
 
 const crypto = require('crypto');
-const createAesKey = require('./AesKey');
-const createAesIV = require('./AesIV');
+const AESKEY = require('./AesKey');
+const AESIV = require('./AesIV');
 const FIREBASE = require('../util/firebase');
+const { rejects } = require('assert');
+const { error } = require('console');
 
 /**=================================================
  * 암호화
@@ -13,20 +15,28 @@ const FIREBASE = require('../util/firebase');
  * @param {string} userPassword 유저가 생성한 비밀번호
  * @returns {string}
  */
-function encrypt(plainString, AesKey, AesIV) {
-  const res = FIREBASE.db.collection('userKey').add({
-    AesKey,
-    AesIV,
-    cdt: getTimestampNow(),
+function encrypt(plainString, userToken, userPassword) {
+  return new Promise((resolve, reject) => {
+    const AesKey = Buffer.from(
+      AESKEY.createAesKey(userToken, userPassword),
+      'base64',
+    );
+    const AesIV = Buffer.from(AESIV.createAesIV(userPassword), 'base64');
+
+    const cipher = crypto.createCipheriv('aes-256-cbc', AesKey, AesIV);
+    let encrypted = Buffer.concat([
+      cipher.update(Buffer.from(plainString, 'utf8')),
+      cipher.final(),
+    ]);
+
+    FIREBASE.db.collection('userKey').add({
+      id: '111111',
+      AesKey: AesKey.toString('base64'),
+      AesIV: AesIV.toString('base64'),
+      cdt: getTimestampNow(),
+    });
+    resolve(encrypted.toString('base64'));
   });
-
-  const cipher = crypto.createCipheriv('aes-256-cbc', AesKey, AesIV);
-  let encrypted = Buffer.concat([
-    cipher.update(Buffer.from(plainString, 'utf8')),
-    cipher.final(),
-  ]);
-
-  return encrypted.toString('base64');
 }
 exports.encrypt = encrypt;
 
