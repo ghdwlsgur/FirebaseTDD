@@ -1,1 +1,2 @@
-// jest.setTimeout(70000);
+jest.mock('request-promise-native');
+jest.setTimeout(70000);

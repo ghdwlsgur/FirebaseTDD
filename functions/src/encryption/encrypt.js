@@ -5,8 +5,6 @@ const crypto = require('crypto');
 const AESKEY = require('./AesKey');
 const AESIV = require('./AesIV');
 const FIREBASE = require('../util/firebase');
-const { rejects } = require('assert');
-const { error } = require('console');
 
 /**=================================================
  * 암호화
@@ -29,13 +27,17 @@ function encrypt(plainString, userToken, userPassword) {
       cipher.final(),
     ]);
 
-    FIREBASE.db.collection('userKey').add({
-      id: '111111',
-      AesKey: AesKey.toString('base64'),
-      AesIV: AesIV.toString('base64'),
-      cdt: getTimestampNow(),
-    });
-    resolve(encrypted.toString('base64'));
+    const doc = {
+      AesKey: AesKey,
+      AesIV: AesIV,
+    };
+
+    const res = {
+      id: setUserKeyDoc(doc),
+      encrypted: encrypted.toString('base64'),
+    };
+
+    resolve(JSON.stringify(res));
   });
 }
 exports.encrypt = encrypt;
@@ -48,3 +50,35 @@ function getTimestampNow() {
   return FIREBASE.firebase.firestore.Timestamp.now();
 }
 exports.getTimestampNow = getTimestampNow;
+
+async function setUserKeyDoc(doc) {
+  const now = getTimestampNow();
+
+  doc.udt = now;
+
+  if (doc.id) {
+    const beforeDoc = await FIREBASE.db.collection('userKey').doc(doc.id).get();
+
+    if (!beforeDoc.exists) {
+      doc.cdt = now;
+      doc.is_visible = true;
+    }
+
+    await FIREBASE.db
+      .collection('userKey')
+      .doc(doc.id)
+      .set({ ...doc }, { merge: true });
+  } else {
+    doc.is_visible = true;
+    doc.cdt = now;
+    const res = await FIREBASE.db.collection('userKey').add({ ...doc });
+    doc.id = res.id;
+    await FIREBASE.db
+      .collection('userKey')
+      .doc(doc.id)
+      .set({ id: res.id }, { merge: true });
+  }
+
+  return doc.id;
+}
+exports.setUserKeyDoc = setUserKeyDoc;
