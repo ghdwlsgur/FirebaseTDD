@@ -2,7 +2,7 @@
 Object.defineProperty(exports, '__esModule', { value: true });
 
 beforeEach(() => {
-  jest.setTimeout(() => {}, 5000);
+  jest.useFakeTimers();
 });
 
 const AESIV = require('../encryption/AesIV');
@@ -34,8 +34,9 @@ describe('AesIV.js code test', () => {
       userToken,
       userPassword,
     ).then();
-    const result2 = await DECRYPT.decrypt(result).then();
-    console.log(result2);
+    console.log(result);
+    // const result2 = await DECRYPT.decrypt(result).then();
+    // console.log(result2);
   });
 
   it('test', async () => {

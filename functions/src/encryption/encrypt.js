@@ -31,13 +31,17 @@ function encrypt(plainString, userToken, userPassword) {
       AesKey: AesKey,
       AesIV: AesIV,
     };
+    const res = {};
+    const id = setUserKeyDoc(doc);
+    console.log(`res.id: ${id}`);
 
-    const res = {
-      id: setUserKeyDoc(doc),
+    res = {
       encrypted: encrypted.toString('base64'),
     };
 
-    resolve(JSON.stringify(res));
+    resolve(res);
+  }).catch(error => {
+    console.log(`error: ${error}`);
   });
 }
 exports.encrypt = encrypt;
@@ -72,10 +76,11 @@ async function setUserKeyDoc(doc) {
     doc.is_visible = true;
     doc.cdt = now;
     const res = await FIREBASE.db.collection('userKey').add({ ...doc });
-    doc.id = res.id;
+    console.log(`res: ${res.id}`);
+
     await FIREBASE.db
       .collection('userKey')
-      .doc(doc.id)
+      .doc(res.id)
       .set({ id: res.id }, { merge: true });
   }
 
